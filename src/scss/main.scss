@@ -1,0 +1,11 @@
+$color-orange: #eee;
+
+.main {
+  font-family: arial;
+  background: $color-orange;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}

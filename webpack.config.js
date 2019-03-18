@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -19,11 +20,11 @@ module.exports = {
     },
     optimization: {
         minimizer: [
-            new UglifyJsPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true
-            }),
+            // new UglifyJsPlugin({
+            //     // cache: true,
+            //     // parallel: true,
+            //     // sourceMap: true
+            // }),
             new OptimizeCSSAssetsPlugin({})
         ]
     },
@@ -31,10 +32,13 @@ module.exports = {
         rules: [
             {
                 test: /\.html$/,
+                exclude: /node_modules/,
                 use: [{
-                    loader: "html-loader", options: {
+                    loader: "html-loader",
+                    options: {
                         minimize: false,
                         interpolate: true,
+                        attrs: [':data-src', ':src']
                     }
                 }]
             },
@@ -49,6 +53,14 @@ module.exports = {
                 }
             },
             {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                    "postcss-loader",
+                ]
+            },
+            {
                 test: /\.scss$/,
                 exclude: /node_modules/,
                 use: [
@@ -60,6 +72,7 @@ module.exports = {
             },
             {
                 test: /\.(png|jpe?g|svg|gif|ico)/i,
+                exclude: /node_modules/,
                 use: [
                     {
                         loader: "url-loader",
@@ -92,17 +105,20 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
             filename: "bundle.css",
             chunkFilename: "[id].css"
         }),
+        new CopyPlugin([
+            { from: 'src/fonts', to: 'fonts' },
+        ]),
         new HtmlWebPackPlugin({
             filename: "./index.html",
             template: "src/pages/index.html",
             title: "Home",
             hash: true,
             chunks: ["app"]
-        })
+        }),
     ]
 };
